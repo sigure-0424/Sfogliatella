@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "float16-sfogliatella"
+version = "0.1.0"
+description = "General-purpose time-series ML library."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "jax>=0.4.20",
+  "equinox>=0.11.0",
+  "optax>=0.2.0",
+  "numpy>=1.24.0",
+  "pandas>=2.0.0",
+  "pyarrow>=14.0.0",
+  "xgboost>=2.0.0",
+  "matplotlib>=3.7.0",
+  "watchdog>=3.0.0",
+  "pyyaml>=6.0",
+]
+
+[project.scripts]
+sfog-train = "sfogliatella.cli.train_cli:main"
+sfog-predict = "sfogliatella.cli.predict_cli:main"
+sfog-live = "sfogliatella.cli.live_cli:main"
+sfog-hpo = "sfogliatella.cli.hpo_cli:main"
+sfog-stack = "sfogliatella.cli.stack_cli:main"
+sfog-eval = "eval:main"
+sfog-pack = "pack:main"
+sfog-unpack = "unpack:main"
+
+[tool.setuptools]
+py-modules = ["train", "predict", "live", "hpo", "stack", "eval", "pack", "unpack"]
+
+[tool.setuptools.packages.find]
+include = ["sfogliatella*"]
