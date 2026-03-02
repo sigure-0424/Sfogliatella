@@ -39,9 +39,15 @@ At session start, you MUST reference these artifacts. If something is missing, r
 * `scripts/tk_start_claude.sh`
 * `scripts/tk_start_codex.sh`
 
-### 0.3 Docker (always-on, repo mounted)
+### 0.3 Docker (always-on, repo mounted, CUDA GPU required)
 
-`docker/compose.yaml` runs a dev container that mounts the repo. Startup is idempotent (already running => no-op).
+`docker/compose.yaml` runs a dev container that mounts the repo and MUST always request the NVIDIA CUDA GPU (equivalent to `--gpus all` or the Compose GPU device reservation).
+
+* CPU-only startup is not allowed by default.
+* If CUDA/NVIDIA runtime is unavailable, startup MUST fail fast rather than silently falling back to CPU.
+* Any temporary CPU-only exception MUST be explicitly documented in the task spec or ADR.
+
+Startup is idempotent (already running => no-op).
 
 > Everything in section 0 is the baseline shared assumption for all sessions.
 
@@ -115,6 +121,7 @@ If the operator explicitly states like**「No approval required」** (No-Confirm
 
 * Execute **all changes**, **all commands**, and **all policy shifts** without asking for approval.
 * AUTONOMOUSLY choose and execute the next action(s) until the termination gate is met.
+* Do not interrupt or stop until the termination conditions are met.
 
 ### 3.1 Hard ban: no “what next?” questions
 
@@ -288,8 +295,9 @@ Treat these as **transient**, not permanent.
 
 ## 8) Docker + `data/sample` smoke (agent-runnable minimal verification)
 
-* Smoke verifies dependencies, I/O, and core paths quickly.
+* Smoke verifies dependencies, I/O, core paths, and CUDA GPU visibility inside Docker quickly.
 * `data/sample/` MUST be committed and always available.
+* The smoke path MUST include a GPU check inside the container (for example, `nvidia-smi` and/or a framework-level check such as `torch.cuda.is_available()`), and MUST fail if Docker cannot access the CUDA GPU.
 * Record smoke results into `STATE.yaml` as `smoke_status` (date/command/result).
 
 ---
@@ -328,6 +336,9 @@ If local Docker/WSL freezes (often OOM or runaway processes):
 
 ### 10.3 High-cost resource usage is forbidden by default (permission required)
 Using expensive/fragile resources is **FORBIDDEN by default** because it increases cost and failure modes.
+
+This restriction does not prohibit the standard local Docker development/smoke path that uses the local CUDA GPU as required by sections 0.3 and 8.
+
 This includes (non-exhaustive):
 - Full-scale training on large datasets as part of routine iteration
 - Long GPU runs without checkpoints/resume
