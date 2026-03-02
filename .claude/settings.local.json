@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3:*)",
+      "Bash(pip3:*)",
+      "Bash(pip install:*)",
+      "Bash(apt-get install:*)",
+      "Bash(sudo apt-get:*)",
+      "Bash(docker:*)",
+      "Bash(docker build:*)",
+      "Bash(docker run:*)",
+      "Skill(claude-developer-platform)"
+    ]
+  }
+}

@@ -1,0 +1,17 @@
+services:
+  sfogliatella:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: sfogliatella:dev
+    container_name: sfogliatella_dev
+    working_dir: /workspace
+    volumes:
+      - ..:/workspace
+    environment:
+      - PYTHONPATH=/workspace
+      - JAX_PLATFORMS=cuda
+    gpus: all
+    stdin_open: true
+    tty: true
+    command: bash
